@@ -1,8 +1,59 @@
 #include "utils/color.h"
-#include "utils/vec3.h"
-#include "utils/ray.h"
+#include "utils/rtweekend.h"
+#include "utils/hittable.h"
+#include "utils/hittable_list.h"
+#include "utils/shapes/sphere.h"
 
 #include <stdio.h>
+
+color ray_color_maker(ray *r, HittableList *world)
+{
+    hit_record rec;
+    if (world->hit(world, r, 0, infinity, &rec))
+    {
+        color sphere_color = make_color(1, 1, 1);
+        color sum_rec_normal = add_to(&rec.normal, &sphere_color);
+        return scale_to(&sum_rec_normal, 0.5);
+    }
+
+    vec3 unit_direction = unit_vector(&r->dir);
+    double a = 0.5 * (y_from(&unit_direction) + 1.0);
+    color scale_a_color = make_color(1.0, 1.0, 1.0);
+    color scale_a = scale_to(&scale_a_color, (1.0 - a));
+    color scale_b_color = make_color(0.5, 0.7, 1.0);
+    color scale_b = scale_to(&scale_b_color, a);
+
+    return substract_to(&scale_a, &scale_b);
+}
+
+color make_color_from_ray(ray *r)
+{
+    point3 center = make_vec3(0, 0, -1);
+    double hit_sphere_result = hit_sphere(&center, 0.5, r);
+
+    if (hit_sphere_result > 0.0)
+    {
+        point3 ray_at_value = ray_at(r, hit_sphere_result);
+        vec3 n_subtract = substract_to(&ray_at_value, &center);
+        vec3 N = unit_vector(&n_subtract);
+        color color_to_return = make_color(x_from(&N) + 1, y_from(&N) + 1, z_from(&N) + 1);
+
+        return scale_to(&color_to_return, 0.5);
+    }
+
+    vec3 unit_direction = unit_vector(&r->dir);
+
+    double y = y_from(&unit_direction);
+    double a = 0.5 * (y + 1.0);
+
+    color color_one = make_color(1.0, 1.0, 1.0);
+    color colort_two = make_color(0.5, 0.7, 1.0);
+
+    color times_color_one = scale_to(&color_one, 1.0 - a);
+    color times_color_two = scale_to(&colort_two, a);
+
+    return add_to(&times_color_one, &times_color_two);
+}
 
 int main()
 {
@@ -13,6 +64,18 @@ int main()
     image_height = (image_height < 1) ? 1 : image_height;
 
     // end image
+
+    // world
+    // HittableList *world = create_hittable_list(2);
+
+    // point3 sphere_one_center = make_vec3(0, 0, -1);
+    // hittable sphere_one = make_sphere(sphere_one_center, 0.5);
+
+    // point3 sphere_two_center = make_vec3(0, -100.5, -1);
+    // hittable sphere_two = make_sphere(sphere_two_center, 100);
+
+    // add_hittable_to_list(world, &sphere_one, 0);
+    // // add_hittable_to_list(world, &sphere_two, 1);
 
     // camera
     double focal_length = 1.0;
@@ -64,6 +127,7 @@ int main()
             ray r = make_ray(&camera_center, &ray_direction);
 
             color pixel_color = make_color_from_ray(&r);
+            // color pixel_color = ray_color_maker(&r, world);
             write_color(pixel_color);
         }
         fflush(stderr);

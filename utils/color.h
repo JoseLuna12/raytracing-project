@@ -3,10 +3,11 @@
 
 #include "vec3.h"
 #include "ray.h"
-#include "../shapes/sphere.h"
 
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "shapes/sphere.h"
 
 typedef vec3 color;
 
@@ -32,35 +33,6 @@ double hit_sphere(const point3 *center, double radius, const ray *r)
     {
         return (-half_b - sqrt(discriminant) / a);
     }
-}
-
-color make_color_from_ray(ray *r)
-{
-    point3 center = make_vec3(0, 0, -1);
-    double hit_sphere_result = hit_sphere(&center, 0.5, r);
-
-    if (hit_sphere_result > 0.0)
-    {
-        point3 ray_at_value = ray_at(r, hit_sphere_result);
-        vec3 n_subtract = substract_to(&ray_at_value, &center);
-        vec3 N = unit_vector(&n_subtract);
-        color color_to_return = make_color(x_from(&N) + 1, y_from(&N) + 1, z_from(&N) + 1);
-
-        return scale_to(&color_to_return, 0.5);
-    }
-
-    vec3 unit_direction = unit_vector(&r->dir);
-
-    double y = y_from(&unit_direction);
-    double a = 0.5 * (y + 1.0);
-
-    color color_one = make_color(1.0, 1.0, 1.0);
-    color colort_two = make_color(0.5, 0.7, 1.0);
-
-    color times_color_one = scale_to(&color_one, 1.0 - a);
-    color times_color_two = scale_to(&colort_two, a);
-
-    return add_to(&times_color_one, &times_color_two);
 }
 
 void write_color(color pixel_color)
