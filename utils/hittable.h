@@ -14,18 +14,19 @@ typedef struct hit_record
 
 } hit_record;
 
-void set_face_normal_of(hit_record *obj, const ray *r, const vec3 *outward_normal)
+vec3 set_face_normal_of(const ray *r, const vec3 *outward_normal)
 {
     bool front_face_value = dot_product(&r->dir, outward_normal) < 0;
     vec3 outward_normal_negative = neg_from(outward_normal);
     if (front_face_value)
     {
-        obj->normal = scale_to(outward_normal, 1);
+        return scale_to(outward_normal, 1);
     }
-    else
-    {
-        obj->normal = outward_normal_negative;
-    }
+    // else
+    // {
+    //      outward_normal_negative;
+    // }
+    return outward_normal_negative;
 }
 
 typedef union

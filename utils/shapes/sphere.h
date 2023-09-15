@@ -36,8 +36,7 @@ bool hit_hittable_sphere(hittable_shape *obj, ray *r, double ray_tmin, double ra
     vec3 outward_normal_sub = substract_to(&rec->p, &s->center);
     vec3 outward_normal = div_by_scalar_to(&outward_normal_sub, s->radius);
 
-    set_face_normal_of(rec, r, &outward_normal);
-
+    rec->normal = set_face_normal_of(r, &outward_normal);
     return true;
 }
 

@@ -13,7 +13,7 @@ bool hit_hittable_list(HittableList *obj, ray *r, double ray_tmin, double ray_tm
     for (size_t i = 0; i < obj->size; i++)
     {
         hittable_shape shape = obj->objects[i]->shape;
-        if (obj->objects[i]->hit(&shape, r, ray_tmin, ray_tmax, rec))
+        if (obj->objects[i]->hit(&shape, r, ray_tmin, ray_tmax, &temp_rec))
         {
             hit_anything = true;
             closest_so_far = temp_rec.t;
@@ -26,8 +26,9 @@ bool hit_hittable_list(HittableList *obj, ray *r, double ray_tmin, double ray_tm
 
 HittableList *create_hittable_list(size_t size)
 {
-    HittableList *list;
-    list->objects = (hittable *)malloc(size);
+    HittableList *list = malloc(sizeof(HittableList));
+
+    list->objects = malloc(size);
     list->size = size;
     list->hit = hit_hittable_list;
     return list;
@@ -35,7 +36,7 @@ HittableList *create_hittable_list(size_t size)
 
 void add_hittable_to_list(HittableList *list, hittable *object, size_t position)
 {
-    list[position] = object;
+    list->objects[position] = object;
 }
 
 void clear_hittable_list(HittableList *list)

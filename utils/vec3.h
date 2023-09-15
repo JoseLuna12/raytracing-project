@@ -58,6 +58,15 @@ void set_to(vec3 *v, int i, double value)
     v->e[i] = value;
 }
 
+void print_vec(vec3 *v)
+{
+    double x = x_from(v);
+    double y = y_from(v);
+    double z = z_from(v);
+
+    fprintf(stderr, "\rX: %f Y: %f Z: %f \n", x, y, z);
+}
+
 vec3 scale_to(const vec3 *v, double scale)
 {
     double r = v->e[0] * scale;
