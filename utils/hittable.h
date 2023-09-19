@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "ray.h"
 #include "shapes/shapes.h"
+#include "interval.h"
 
 typedef struct hit_record
 {
@@ -22,10 +23,6 @@ vec3 set_face_normal_of(const ray *r, const vec3 *outward_normal)
     {
         return scale_to(outward_normal, 1);
     }
-    // else
-    // {
-    //      outward_normal_negative;
-    // }
     return outward_normal_negative;
 }
 
@@ -37,14 +34,14 @@ typedef union
 typedef struct hittable
 {
     hittable_shape shape;
-    bool (*hit)(hittable_shape *obj, ray *r, double ray_tmin, double ray_tmax, hit_record *rec);
+    bool (*hit)(hittable_shape *obj, ray *r, interval *ray_t, hit_record *rec);
 } hittable;
 
 typedef struct HittableList
 {
     hittable **objects;
     size_t size;
-    bool (*hit)(struct HittableList *obj, ray *r, double ray_tmin, double ray_tmax, hit_record *rec);
+    bool (*hit)(struct HittableList *obj, ray *r, interval *ray_t, hit_record *rec);
 } HittableList;
 
 #endif

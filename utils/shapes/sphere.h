@@ -5,8 +5,9 @@
 #include "../hittable.h"
 #include "../vec3.h"
 #include "shapes.h"
+#include "../interval.h"
 
-bool hit_hittable_sphere(hittable_shape *obj, ray *r, double ray_tmin, double ray_tmax, hit_record *rec)
+bool hit_hittable_sphere(hittable_shape *obj, ray *r, interval *ray_t, hit_record *rec)
 {
     const Sphere *s = (Sphere *)obj;
     vec3 oc = substract_to(&r->orig, &s->center);
@@ -22,10 +23,11 @@ bool hit_hittable_sphere(hittable_shape *obj, ray *r, double ray_tmin, double ra
 
     double sqrtd = sqrt(discriminant);
     double root = (-half_b - sqrtd) / a;
-    if (root <= ray_tmin || ray_tmax <= root)
+
+    if (!interval_surrounds(ray_t, root))
     {
         root = (-half_b + sqrtd) / a;
-        if (root <= ray_tmin || ray_tmax <= root)
+        if (!interval_surrounds(ray_t, root))
         {
             return false;
         }

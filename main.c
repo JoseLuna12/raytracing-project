@@ -9,7 +9,8 @@
 color ray_color_maker(ray *r, HittableList *world)
 {
     hit_record rec;
-    if (world->hit(world, r, 0, infinity, &rec))
+    interval world_interval = {0, infinity};
+    if (world->hit(world, r, &world_interval, &rec))
     {
         color sphere_color = make_color(1, 1, 1);
         color sum_rec_normal = add_to(&rec.normal, &sphere_color);
@@ -48,8 +49,8 @@ int main()
     point3 sphere_two_center = make_vec3(0, -100.5, -1);
     hittable sphere_two = make_sphere(sphere_two_center, 100);
 
-    add_hittable_to_list(world, &sphere_two, 0);
     add_hittable_to_list(world, &sphere_one, 1);
+    add_hittable_to_list(world, &sphere_two, 0);
 
     // camera
     double focal_length = 1.0;
